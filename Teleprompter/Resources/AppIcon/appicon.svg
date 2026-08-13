@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#182A52"/>
+      <stop offset="100%" stop-color="#0B1730"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background squircle -->
+  <rect x="0" y="0" width="1024" height="1024" rx="224" fill="url(#bg)"/>
+
+  <!-- Lens ring (nods to the camera behind the teleprompter glass) -->
+  <circle cx="512" cy="512" r="300" fill="none" stroke="#D9AE49" stroke-width="6" opacity="0.45"/>
+
+  <!-- Diamond of scrolling text bars, centered like a lens/focal point -->
+  <rect x="432" y="298" width="160" height="44" rx="22" fill="#C9D2E8"/>
+  <rect x="372" y="362" width="280" height="44" rx="22" fill="#C9D2E8"/>
+  <rect x="312" y="426" width="400" height="44" rx="22" fill="#C9D2E8"/>
+
+  <!-- Center reading guide (widest bar) -->
+  <rect x="192" y="490" width="640" height="44" rx="22" fill="#D9AE49"/>
+
+  <rect x="312" y="554" width="400" height="44" rx="22" fill="#C9D2E8"/>
+  <rect x="372" y="618" width="280" height="44" rx="22" fill="#C9D2E8"/>
+  <rect x="432" y="682" width="160" height="44" rx="22" fill="#C9D2E8"/>
+</svg>

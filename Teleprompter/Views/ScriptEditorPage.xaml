@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Teleprompter.Views.ScriptEditorPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:Teleprompter.ViewModels"
+    x:DataType="viewModels:ScriptEditorViewModel"
+    Title="Script">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="Save"
+            Command="{Binding SaveCommand}"
+            SemanticProperties.Description="Save script" />
+        <ToolbarItem
+            Text="Export"
+            Command="{Binding ExportCommand}"
+            SemanticProperties.Description="Export script to file" />
+    </ContentPage.ToolbarItems>
+
+    <Grid
+        RowDefinitions="Auto,Auto,*"
+        Padding="16"
+        RowSpacing="8">
+
+        <Entry
+            Text="{Binding Title}"
+            Placeholder="Script title"
+            FontSize="18" />
+
+        <Label
+            Grid.Row="1"
+            Text="{Binding WordCountText}"
+            FontSize="12"
+            TextColor="Gray" />
+
+        <Editor
+            Grid.Row="2"
+            Text="{Binding Content}"
+            Placeholder="Start typing your script..."
+            AutoSize="TextChanges"
+            FontSize="16" />
+    </Grid>
+
+</ContentPage>

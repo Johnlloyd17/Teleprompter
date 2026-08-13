@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Teleprompter.Views.ScriptListPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:Teleprompter.Models"
+    xmlns:viewModels="clr-namespace:Teleprompter.ViewModels"
+    x:DataType="viewModels:ScriptListViewModel"
+    Title="Scripts">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="Import"
+            Command="{Binding ImportScriptCommand}"
+            SemanticProperties.Description="Import script from file" />
+        <ToolbarItem
+            Text="Settings"
+            Command="{Binding OpenSettingsCommand}"
+            SemanticProperties.Description="Open settings" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,*">
+        <Border
+            IsVisible="{Binding HasSession}"
+            Margin="12,6"
+            Padding="16,10"
+            BackgroundColor="{StaticResource Tertiary}"
+            StrokeShape="RoundRectangle 12">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                    <Label
+                        Text="Resume last session"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        TextColor="White" />
+                    <Label
+                        Text="{Binding SessionTitle}"
+                        FontSize="12"
+                        TextColor="White"
+                        LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+                <Button
+                    Grid.Column="1"
+                    Text="Resume"
+                    TextColor="White"
+                    BackgroundColor="{StaticResource Primary}"
+                    Command="{Binding ResumeSessionCommand}"
+                    VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+        <CollectionView
+            Grid.Row="1"
+            ItemsSource="{Binding Scripts}"
+            SelectionMode="None"
+            Margin="0,4,0,80">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout
+                    Padding="30"
+                    Spacing="8"
+                    VerticalOptions="Center">
+                    <Label
+                        Text="No scripts yet"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Center" />
+                    <Label
+                        Text="Tap + to create your first script."
+                        HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ScriptModel">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem
+                                    Text="Delete"
+                                    BackgroundColor="Red"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ScriptListViewModel}}, Path=DeleteScriptCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Border
+                            Margin="12,6"
+                            Padding="16,12"
+                            StrokeShape="RoundRectangle 12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ScriptListViewModel}}, Path=OpenScriptCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                RowDefinitions="Auto,Auto"
+                                RowSpacing="2">
+                                <Label
+                                    Text="{Binding Title}"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    LineBreakMode="TailTruncation" />
+                                <Label
+                                    Grid.Row="1"
+                                    Text="{Binding WordCount, StringFormat='{0} words'}"
+                                    FontSize="12"
+                                    TextColor="Gray" />
+                                <VerticalStackLayout
+                                    Grid.Column="1"
+                                    Grid.RowSpan="2"
+                                    Spacing="2"
+                                    VerticalOptions="Center">
+                                    <Button
+                                        Text="&#9654;"
+                                        FontSize="14"
+                                        TextColor="White"
+                                        BackgroundColor="{StaticResource Primary}"
+                                        WidthRequest="44"
+                                        HeightRequest="44"
+                                        CornerRadius="22"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ScriptListViewModel}}, Path=OpenPlayerCommand}"
+                                        CommandParameter="{Binding .}"
+                                        SemanticProperties.Description="Play script in teleprompter" />
+                                    <Label
+                                        Text="{Binding UpdatedAt, StringFormat='{0:MMM d}'}"
+                                        FontSize="12"
+                                        TextColor="Gray"
+                                        HorizontalOptions="Center" />
+                                    <Button
+                                        Text="Delete"
+                                        FontSize="12"
+                                        TextColor="White"
+                                        BackgroundColor="Red"
+                                        HeightRequest="30"
+                                        Padding="10,0"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ScriptListViewModel}}, Path=DeleteScriptCommand}"
+                                        CommandParameter="{Binding .}"
+                                        SemanticProperties.Description="Delete script" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button
+            Grid.Row="1"
+            Text="+"
+            FontSize="26"
+            WidthRequest="60"
+            HeightRequest="60"
+            CornerRadius="30"
+            HorizontalOptions="End"
+            VerticalOptions="End"
+            Margin="0,0,20,30"
+            Command="{Binding AddScriptCommand}"
+            SemanticProperties.Description="Add new script" />
+    </Grid>
+
+</ContentPage>

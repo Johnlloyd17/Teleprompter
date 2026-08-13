@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Teleprompter.Views.TeleprompterPlayerPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Teleprompter.Controls"
+    xmlns:viewModels="clr-namespace:Teleprompter.ViewModels"
+    x:DataType="viewModels:TeleprompterPlayerViewModel"
+    Title="{Binding Title}">
+
+    <Grid
+        RowDefinitions="*,Auto,Auto,Auto"
+        RowSpacing="8"
+        Padding="8">
+
+        <controls:ScrollingTextView
+            x:Name="PlayerView"
+            Text="{Binding Content}"
+            Speed="{Binding Speed}"
+            FontSize="{Binding FontSize}"
+            MirrorMode="{Binding MirrorMode}"
+            TextColor="{Binding TextColor}"
+            BackgroundColor="{Binding BackgroundColor}"
+            HighlightEnabled="{Binding HighlightEnabled}"
+            HighlightWpm="{Binding HighlightWpm}"
+            HighlightColor="{Binding HighlightColor}"
+            ProgressChanged="OnProgressChanged"
+            IsPlayingChanged="OnIsPlayingChanged" />
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+            <ProgressBar Progress="{Binding Progress}" VerticalOptions="Center" />
+            <Label
+                Grid.Column="1"
+                Text="{Binding ProgressText}"
+                FontSize="12"
+                TextColor="Gray"
+                Margin="8,0,0,0"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <Grid
+            Grid.Row="2"
+            ColumnDefinitions="*,*,*,*"
+            ColumnSpacing="8">
+            <Button
+                Text="&#9198;"
+                Command="{Binding RewindCommand}"
+                SemanticProperties.Description="Rewind 5 seconds" />
+            <Button
+                Grid.Column="1"
+                Text="Play"
+                Command="{Binding TogglePlayCommand}"
+                SemanticProperties.Description="Play or pause">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsPlaying}" Value="True">
+                        <Setter Property="Text" Value="Pause" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Button
+                Grid.Column="2"
+                Text="&#9197;"
+                Command="{Binding ForwardCommand}"
+                SemanticProperties.Description="Forward 5 seconds" />
+            <Button
+                Grid.Column="3"
+                Text="Stop"
+                Command="{Binding StopCommand}"
+                SemanticProperties.Description="Stop and reset" />
+        </Grid>
+
+        <ScrollView Grid.Row="3" MaximumHeightRequest="230">
+            <VerticalStackLayout Spacing="8">
+
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Label Text="Speed" VerticalOptions="Center" />
+                    <Slider
+                        Grid.Column="1"
+                        Value="{Binding Speed}"
+                        Minimum="10"
+                        Maximum="150"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Column="2"
+                        Text="{Binding SpeedText}"
+                        FontSize="12"
+                        TextColor="Gray"
+                        VerticalOptions="Center" />
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Label Text="Font size" VerticalOptions="Center" />
+                    <HorizontalStackLayout Grid.Column="1" Spacing="8">
+                        <Button
+                            Text="-"
+                            WidthRequest="40"
+                            Command="{Binding DecreaseFontCommand}"
+                            SemanticProperties.Description="Decrease font size" />
+                        <Button
+                            Text="+"
+                            WidthRequest="40"
+                            Command="{Binding IncreaseFontCommand}"
+                            SemanticProperties.Description="Increase font size" />
+                    </HorizontalStackLayout>
+                    <Label
+                        Grid.Column="2"
+                        Text="{Binding FontSizeText}"
+                        FontSize="12"
+                        TextColor="Gray"
+                        VerticalOptions="Center" />
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Label Text="Mirror" VerticalOptions="Center" />
+                    <Switch
+                        Grid.Column="1"
+                        IsToggled="{Binding MirrorMode}"
+                        HorizontalOptions="Start"
+                        VerticalOptions="Center" />
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Label Text="Highlight" VerticalOptions="Center" />
+                    <Switch
+                        Grid.Column="1"
+                        IsToggled="{Binding HighlightEnabled}"
+                        HorizontalOptions="Start"
+                        VerticalOptions="Center" />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="Auto,*,Auto"
+                    ColumnSpacing="8"
+                    IsVisible="{Binding HighlightEnabled}">
+                    <Label Text="Highlight speed" VerticalOptions="Center" />
+                    <Slider
+                        Grid.Column="1"
+                        Value="{Binding HighlightWpm}"
+                        Minimum="60"
+                        Maximum="300"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Column="2"
+                        Text="{Binding HighlightWpmText}"
+                        FontSize="12"
+                        TextColor="Gray"
+                        VerticalOptions="Center" />
+                </Grid>
+
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding HighlightEnabled}">
+                    <Label Text="Highlight:" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="8">
+                        <Button
+                            BackgroundColor="#FFFF00"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectHighlightColorCommand}"
+                            CommandParameter="#FFFF00"
+                            SemanticProperties.Description="Yellow highlight" />
+                        <Button
+                            BackgroundColor="#00FF00"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectHighlightColorCommand}"
+                            CommandParameter="#00FF00"
+                            SemanticProperties.Description="Green highlight" />
+                        <Button
+                            BackgroundColor="#00FFFF"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectHighlightColorCommand}"
+                            CommandParameter="#00FFFF"
+                            SemanticProperties.Description="Cyan highlight" />
+                        <Button
+                            BackgroundColor="#FFA500"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectHighlightColorCommand}"
+                            CommandParameter="#FFA500"
+                            SemanticProperties.Description="Orange highlight" />
+                        <Button
+                            BackgroundColor="#FF00FF"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectHighlightColorCommand}"
+                            CommandParameter="#FF00FF"
+                            SemanticProperties.Description="Magenta highlight" />
+                        <Button
+                            BackgroundColor="#FF0000"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectHighlightColorCommand}"
+                            CommandParameter="#FF0000"
+                            SemanticProperties.Description="Red highlight" />
+                        <Button
+                            BackgroundColor="#FFFFFF"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectHighlightColorCommand}"
+                            CommandParameter="#FFFFFF"
+                            SemanticProperties.Description="White highlight" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Text:" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="8">
+                        <Button
+                            BackgroundColor="Black"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectTextColorCommand}"
+                            CommandParameter="#000000"
+                            SemanticProperties.Description="Black text" />
+                        <Button
+                            BackgroundColor="White"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectTextColorCommand}"
+                            CommandParameter="#FFFFFF"
+                            SemanticProperties.Description="White text" />
+                        <Button
+                            BackgroundColor="#FFFF00"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectTextColorCommand}"
+                            CommandParameter="#FFFF00"
+                            SemanticProperties.Description="Yellow text" />
+                        <Button
+                            BackgroundColor="#00FF00"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectTextColorCommand}"
+                            CommandParameter="#00FF00"
+                            SemanticProperties.Description="Green text" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Background:" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="8">
+                        <Button
+                            BackgroundColor="Black"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectBackgroundColorCommand}"
+                            CommandParameter="#000000"
+                            SemanticProperties.Description="Black background" />
+                        <Button
+                            BackgroundColor="White"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectBackgroundColorCommand}"
+                            CommandParameter="#FFFFFF"
+                            SemanticProperties.Description="White background" />
+                        <Button
+                            BackgroundColor="#004400"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectBackgroundColorCommand}"
+                            CommandParameter="#004400"
+                            SemanticProperties.Description="Green background" />
+                        <Button
+                            BackgroundColor="#222222"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            CornerRadius="18"
+                            Command="{Binding SelectBackgroundColorCommand}"
+                            CommandParameter="#222222"
+                            SemanticProperties.Description="Dark gray background" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>
