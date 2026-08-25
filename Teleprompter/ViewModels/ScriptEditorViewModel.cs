@@ -13,16 +13,16 @@ namespace Teleprompter.ViewModels
         private ScriptModel? _script;
 
         [ObservableProperty]
-        public partial int ScriptId { get; set; }
+        private int _scriptId;
 
         [ObservableProperty]
-        public partial string Title { get; set; } = string.Empty;
+        private string _title = string.Empty;
 
         [ObservableProperty]
-        public partial string Content { get; set; } = string.Empty;
+        private string _content = string.Empty;
 
         [ObservableProperty]
-        public partial string WordCountText { get; set; } = "0 words";
+        private string _wordCountText = "0 words";
 
         public ScriptEditorViewModel(DatabaseService databaseService, IFileExportService fileExportService)
         {

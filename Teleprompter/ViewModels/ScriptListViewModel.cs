@@ -16,10 +16,10 @@ namespace Teleprompter.ViewModels
         public ObservableCollection<ScriptModel> Scripts { get; } = new();
 
         [ObservableProperty]
-        public partial bool HasSession { get; set; }
+        private bool _hasSession;
 
         [ObservableProperty]
-        public partial string SessionTitle { get; set; } = string.Empty;
+        private string _sessionTitle = string.Empty;
 
         public ScriptListViewModel(DatabaseService databaseService, IFileImportService fileImportService)
         {

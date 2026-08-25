@@ -30,40 +30,40 @@ namespace Teleprompter.ViewModels
         public event EventHandler<PlaybackAction>? ActionRequested;
 
         [ObservableProperty]
-        public partial string Title { get; set; } = string.Empty;
+        private string _title = string.Empty;
 
         [ObservableProperty]
-        public partial string Content { get; set; } = string.Empty;
+        private string _content = string.Empty;
 
         [ObservableProperty]
-        public partial double Speed { get; set; } = 60;
+        private double _speed = 60;
 
         [ObservableProperty]
-        public partial double FontSize { get; set; } = 28;
+        private double _fontSize = 28;
 
         [ObservableProperty]
-        public partial bool MirrorMode { get; set; }
+        private bool _mirrorMode;
 
         [ObservableProperty]
-        public partial bool HighlightEnabled { get; set; }
+        private bool _highlightEnabled;
 
         [ObservableProperty]
-        public partial double HighlightWpm { get; set; } = 180;
+        private double _highlightWpm = 180;
 
         [ObservableProperty]
-        public partial Color HighlightColor { get; set; } = Colors.Yellow;
+        private Color _highlightColor = Colors.Yellow;
 
         [ObservableProperty]
-        public partial Color TextColor { get; set; } = Colors.White;
+        private Color _textColor = Colors.White;
 
         [ObservableProperty]
-        public partial Color BackgroundColor { get; set; } = Colors.Black;
+        private Color _backgroundColor = Colors.Black;
 
         [ObservableProperty]
-        public partial double Progress { get; set; }
+        private double _progress;
 
         [ObservableProperty]
-        public partial bool IsPlaying { get; set; }
+        private bool _isPlaying;
 
         public string SpeedText => $"{Speed:0} px/s";
 

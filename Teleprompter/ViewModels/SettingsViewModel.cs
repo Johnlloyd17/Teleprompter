@@ -10,31 +10,31 @@ namespace Teleprompter.ViewModels
         private CancellationTokenSource? _persistCts;
 
         [ObservableProperty]
-        public partial double Speed { get; set; }
+        private double _speed;
 
         [ObservableProperty]
-        public partial double FontSize { get; set; }
+        private double _fontSize;
 
         [ObservableProperty]
-        public partial bool MirrorMode { get; set; }
+        private bool _mirrorMode;
 
         [ObservableProperty]
-        public partial bool HighlightEnabled { get; set; }
+        private bool _highlightEnabled;
 
         [ObservableProperty]
-        public partial double HighlightWpm { get; set; } = 180;
+        private double _highlightWpm = 180;
 
         [ObservableProperty]
-        public partial Color HighlightColor { get; set; } = Colors.Yellow;
+        private Color _highlightColor = Colors.Yellow;
 
         [ObservableProperty]
-        public partial Color TextColor { get; set; } = Colors.White;
+        private Color _textColor = Colors.White;
 
         [ObservableProperty]
-        public partial Color BackgroundColor { get; set; } = Colors.Black;
+        private Color _backgroundColor = Colors.Black;
 
         [ObservableProperty]
-        public partial string Theme { get; set; } = "System";
+        private string _theme = "System";
 
         public string SpeedText => $"{Speed:0} px/s";
 
