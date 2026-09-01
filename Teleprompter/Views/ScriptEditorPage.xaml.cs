@@ -8,6 +8,10 @@ namespace Teleprompter.Views
         {
             InitializeComponent();
             BindingContext = viewModel;
+            Shell.SetBackButtonBehavior(this, new BackButtonBehavior
+            {
+                Command = new Command(async () => await Shell.Current.GoToAsync(".."))
+            });
         }
     }
 }

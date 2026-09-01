@@ -11,19 +11,22 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem
             Text="Import"
+            IconImageSource="import_file.png"
             Command="{Binding ImportScriptCommand}"
             SemanticProperties.Description="Import script from file" />
         <ToolbarItem
             Text="Settings"
+            IconImageSource="settings.png"
             Command="{Binding OpenSettingsCommand}"
             SemanticProperties.Description="Open settings" />
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto,*">
+
         <Border
             IsVisible="{Binding HasSession}"
-            Margin="12,6"
-            Padding="16,10"
+            Margin="0,0,0,8"
+            Padding="14,10"
             BackgroundColor="{StaticResource Tertiary}"
             StrokeShape="RoundRectangle 12">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
@@ -41,9 +44,11 @@
                 </VerticalStackLayout>
                 <Button
                     Grid.Column="1"
-                    Text="Resume"
+                    Style="{StaticResource NoBorderButton}"
+                    ImageSource="play.png"
                     TextColor="White"
-                    BackgroundColor="{StaticResource Primary}"
+                    WidthRequest="40"
+                    HeightRequest="40"
                     Command="{Binding ResumeSessionCommand}"
                     VerticalOptions="Center" />
             </Grid>
@@ -54,6 +59,9 @@
             ItemsSource="{Binding Scripts}"
             SelectionMode="None"
             Margin="0,4,0,80">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
             <CollectionView.EmptyView>
                 <VerticalStackLayout
                     Padding="30"
@@ -71,19 +79,9 @@
             </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ScriptModel">
-                    <SwipeView>
-                        <SwipeView.RightItems>
-                            <SwipeItems>
-                                <SwipeItem
-                                    Text="Delete"
-                                    BackgroundColor="Red"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ScriptListViewModel}}, Path=DeleteScriptCommand}"
-                                    CommandParameter="{Binding .}" />
-                            </SwipeItems>
-                        </SwipeView.RightItems>
                         <Border
-                            Margin="12,6"
-                            Padding="16,12"
+                            Margin="0"
+                            Padding="14,12"
                             StrokeShape="RoundRectangle 12">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
@@ -96,7 +94,7 @@
                                 RowSpacing="2">
                                 <Label
                                     Text="{Binding Title}"
-                                    FontSize="16"
+                                    FontSize="15"
                                     FontAttributes="Bold"
                                     LineBreakMode="TailTruncation" />
                                 <Label
@@ -107,16 +105,16 @@
                                 <VerticalStackLayout
                                     Grid.Column="1"
                                     Grid.RowSpan="2"
-                                    Spacing="2"
+                                    Spacing="4"
                                     VerticalOptions="Center">
                                     <Button
-                                        Text="&#9654;"
-                                        FontSize="14"
+                                        Style="{StaticResource NoBorderButton}"
+                                        ImageSource="play.png"
                                         TextColor="White"
                                         BackgroundColor="{StaticResource Primary}"
-                                        WidthRequest="44"
-                                        HeightRequest="44"
-                                        CornerRadius="22"
+                                        WidthRequest="36"
+                                        HeightRequest="36"
+                                        CornerRadius="18"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ScriptListViewModel}}, Path=OpenPlayerCommand}"
                                         CommandParameter="{Binding .}"
                                         SemanticProperties.Description="Play script in teleprompter" />
@@ -126,33 +124,35 @@
                                         TextColor="Gray"
                                         HorizontalOptions="Center" />
                                     <Button
-                                        Text="Delete"
-                                        FontSize="12"
+                                        Style="{StaticResource NoBorderButton}"
+                                        ImageSource="delete.png"
                                         TextColor="White"
-                                        BackgroundColor="Red"
-                                        HeightRequest="30"
-                                        Padding="10,0"
+                                        BackgroundColor="{AppThemeBinding Light=#FF3B30, Dark=#FF453A}"
+                                        WidthRequest="28"
+                                        HeightRequest="28"
+                                        CornerRadius="14"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:ScriptListViewModel}}, Path=DeleteScriptCommand}"
                                         CommandParameter="{Binding .}"
                                         SemanticProperties.Description="Delete script" />
                                 </VerticalStackLayout>
                             </Grid>
                         </Border>
-                    </SwipeView>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
         <Button
             Grid.Row="1"
-            Text="+"
-            FontSize="26"
-            WidthRequest="60"
-            HeightRequest="60"
-            CornerRadius="30"
+            ImageSource="add.png"
+            TextColor="White"
+            BackgroundColor="{StaticResource Primary}"
+            WidthRequest="56"
+            HeightRequest="56"
+            Padding="16"
+            CornerRadius="28"
             HorizontalOptions="End"
             VerticalOptions="End"
-            Margin="0,0,20,30"
+            Margin="0,0,16,24"
             Command="{Binding AddScriptCommand}"
             SemanticProperties.Description="Add new script" />
     </Grid>

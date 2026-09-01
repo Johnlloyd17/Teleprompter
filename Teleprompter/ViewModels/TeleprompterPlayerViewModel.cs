@@ -65,6 +65,9 @@ namespace Teleprompter.ViewModels
         [ObservableProperty]
         private bool _isPlaying;
 
+        [ObservableProperty]
+        private bool _isFullScreen;
+
         public string SpeedText => $"{Speed:0} px/s";
 
         public string FontSizeText => $"{FontSize:0} pt";
@@ -72,6 +75,8 @@ namespace Teleprompter.ViewModels
         public string HighlightWpmText => $"{HighlightWpm:0} wpm";
 
         public string ProgressText => $"{Progress * 100:0}%";
+
+        public bool IsNormalMode => !IsFullScreen;
 
         public TeleprompterPlayerViewModel(DatabaseService databaseService, IRemoteControlService remoteControlService)
         {
@@ -164,6 +169,11 @@ namespace Teleprompter.ViewModels
         {
             _settingsDirty = true;
             SchedulePersist();
+        }
+
+        partial void OnIsFullScreenChanged(bool value)
+        {
+            OnPropertyChanged(nameof(IsNormalMode));
         }
 
         partial void OnProgressChanged(double value)
@@ -320,6 +330,9 @@ namespace Teleprompter.ViewModels
             ActionRequested?.Invoke(this, IsPlaying ? PlaybackAction.Pause : PlaybackAction.Play);
 
         [RelayCommand]
+        private void ToggleFullScreen() => IsFullScreen = !IsFullScreen;
+
+        [RelayCommand]
         private void Stop() => ActionRequested?.Invoke(this, PlaybackAction.Stop);
 
         [RelayCommand]
@@ -329,7 +342,7 @@ namespace Teleprompter.ViewModels
         private void Forward() => ActionRequested?.Invoke(this, PlaybackAction.Forward);
 
         [RelayCommand]
-        private void IncreaseFont() => FontSize = Math.Min(96, FontSize + 2);
+        private void IncreaseFont() => FontSize = FontSize + 2;
 
         [RelayCommand]
         private void DecreaseFont() => FontSize = Math.Max(10, FontSize - 2);

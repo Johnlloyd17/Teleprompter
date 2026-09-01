@@ -143,7 +143,7 @@ namespace Teleprompter.ViewModels
         }
 
         [RelayCommand]
-        private void IncreaseFont() => FontSize = Math.Min(96, FontSize + 2);
+        private void IncreaseFont() => FontSize = FontSize + 2;
 
         [RelayCommand]
         private void DecreaseFont() => FontSize = Math.Max(10, FontSize - 2);

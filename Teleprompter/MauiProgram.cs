@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 using Teleprompter.Data;
 using Teleprompter.Services;
@@ -20,6 +21,13 @@ namespace Teleprompter
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+#if WINDOWS
+            builder.ConfigureMauiHandlers(handlers =>
+            {
+                handlers.AddHandler<Shell, Teleprompter.Platforms.Windows.CustomShellHandler>();
+            });
+#endif
 
             builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<IFileImportService, FileImportService>();

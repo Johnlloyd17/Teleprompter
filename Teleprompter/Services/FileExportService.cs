@@ -168,7 +168,7 @@ namespace Teleprompter.Services
 
             private static byte[] LoadFontBytes()
             {
-                using var stream = FileSystem.OpenAppPackageFileAsync("OpenSans-Regular.ttf").GetAwaiter().GetResult();
+                using var stream = FileSystem.OpenAppPackageFileAsync("ExportFonts/OpenSans-Regular.ttf").GetAwaiter().GetResult();
                 using var memoryStream = new MemoryStream();
                 stream.CopyTo(memoryStream);
                 return memoryStream.ToArray();

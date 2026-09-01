@@ -29,6 +29,8 @@ namespace Teleprompter.Controls
         private int _activeWordIndex = -1;
         private int _layoutGeneration;
         private DateTime _lastProgressRaiseTime = DateTime.MinValue;
+        private const float MinFontSize = 14f;
+        private double _effectiveFontSize;
 
         public static readonly BindableProperty TextProperty =
             BindableProperty.Create(nameof(Text), typeof(string), typeof(ScrollingTextView), string.Empty,
@@ -64,6 +66,7 @@ namespace Teleprompter.Controls
 
         public event EventHandler<double>? ProgressChanged;
         public event EventHandler<bool>? IsPlayingChanged;
+        public event EventHandler<double>? EffectiveFontSizeChanged;
 
         public string Text
         {
@@ -113,6 +116,8 @@ namespace Teleprompter.Controls
             set => SetValue(HighlightColorProperty, value);
         }
 
+        public double EffectiveFontSize => _effectiveFontSize;
+
         public bool IsPlaying => _engine.IsPlaying;
 
         public double Progress { get; private set; }
@@ -132,6 +137,7 @@ namespace Teleprompter.Controls
 
             ApplyTextColor();
             ApplyHighlightColor();
+            _effectiveFontSize = FontSize;
             RebuildLayoutAsync();
         }
 
@@ -187,6 +193,75 @@ namespace Teleprompter.Controls
             }
         }
 
+        private const double SmoothSeekDurationSec = 0.15;
+
+        public void SmoothSeekBy(double seconds)
+        {
+            if (!_contentReady)
+            {
+                SeekBy(seconds);
+                return;
+            }
+
+            StopScrolling();
+
+            var startOffset = _scrollOffset;
+            var seekPixels = seconds * Speed;
+            var wasPlaying = _engine.IsPlaying;
+
+            SeekBy(seconds);
+
+            var targetOffset = _scrollOffset;
+
+            if (wasPlaying)
+            {
+                var engineContribution = SmoothSeekDurationSec * Speed;
+                targetOffset += engineContribution;
+            }
+
+            targetOffset = Math.Max(0, targetOffset);
+
+            var manager = Handler?.MauiContext?.Services.GetService<IAnimationManager>();
+            if (manager is null)
+            {
+                UpdatePosition(targetOffset);
+                ApplyHighlight();
+                if (wasPlaying)
+                    StartScrolling();
+                return;
+            }
+
+            var seekAnimation = new Microsoft.Maui.Animations.Animation(
+                progress =>
+                {
+                    try
+                    {
+                        var eased = progress;
+                        var offset = startOffset + (targetOffset - startOffset) * eased;
+                        UpdatePosition(offset);
+                        ApplyHighlight();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError("Smooth seek tick failed", ex);
+                    }
+                },
+                0,
+                SmoothSeekDurationSec,
+                Easing.Linear,
+                () =>
+                {
+                    UpdatePosition(targetOffset);
+                    ApplyHighlight();
+                    if (wasPlaying)
+                        StartScrolling();
+                });
+
+            seekAnimation.Commit(manager);
+        }
+
+        public void RequestRefit() => RebuildLayoutAsync();
+
         private void OnSpeedChanged()
         {
             if (_engine.IsPlaying)
@@ -206,7 +281,6 @@ namespace Teleprompter.Controls
 
         private void ApplyFontSize()
         {
-            _font.Size = (float)FontSize;
             RebuildLayoutAsync();
         }
 
@@ -253,13 +327,17 @@ namespace Teleprompter.Controls
             try
             {
                 var oldWidth = _viewWidth;
+                var oldHeight = _viewHeight;
                 _viewHeight = Height;
                 _viewWidth = Width;
 
                 if (double.IsNaN(_viewHeight) || double.IsNaN(_viewWidth))
                     return;
 
-                if (_fullText.Length > 0 && Math.Abs(oldWidth - _viewWidth) > 0.5)
+                var sizeChanged = Math.Abs(oldWidth - _viewWidth) > 0.5
+                               || Math.Abs(oldHeight - _viewHeight) > 0.5;
+
+                if (_fullText.Length > 0 && sizeChanged)
                     RebuildLayoutAsync();
                 else
                     _canvas.InvalidateSurface();
@@ -417,13 +495,18 @@ namespace Teleprompter.Controls
         {
             var generation = ++_layoutGeneration;
             var text = _fullText;
-            var fontSize = (float)FontSize;
+            var requestedFontSize = (float)FontSize;
             var width = (float)Math.Max(1, _viewWidth);
+            var height = (float)Math.Max(1, _viewHeight);
 
             TextLayout? layout;
+            float fittedFontSize;
             try
             {
-                layout = await Task.Run(() => ComputeLayout(text, fontSize, width));
+                (layout, fittedFontSize) = await Task.Run(() =>
+                {
+                    return (ComputeLayout(text, requestedFontSize, width), requestedFontSize);
+                });
             }
             catch (Exception ex)
             {
@@ -433,6 +516,13 @@ namespace Teleprompter.Controls
 
             if (layout is null || generation != _layoutGeneration)
                 return;
+
+            if (Math.Abs(_effectiveFontSize - fittedFontSize) > 0.5)
+            {
+                _effectiveFontSize = fittedFontSize;
+                _font.Size = fittedFontSize;
+                EffectiveFontSizeChanged?.Invoke(this, fittedFontSize);
+            }
 
             ApplyLayout(layout);
         }
@@ -686,6 +776,27 @@ namespace Teleprompter.Controls
                 if (typeface is not null && !ReferenceEquals(typeface, SKTypeface.Default))
                     typeface.Dispose();
             }
+        }
+
+        private static (TextLayout? layout, float fittedFontSize) ComputeLayoutWithAutoFit(
+            string text, float requestedFontSize, float maxWidth, float availableHeight)
+        {
+            var fontSize = requestedFontSize;
+
+            while (fontSize >= MinFontSize)
+            {
+                var layout = ComputeLayout(text, fontSize, maxWidth);
+                if (layout is null)
+                    return (null, fontSize);
+
+                if (layout.ContentHeight <= availableHeight)
+                    return (layout, fontSize);
+
+                fontSize -= 2;
+            }
+
+            var finalLayout = ComputeLayout(text, MinFontSize, maxWidth);
+            return (finalLayout, MinFontSize);
         }
 
         private static List<Token> Tokenize(string text)

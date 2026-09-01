@@ -10,6 +10,10 @@ namespace Teleprompter.Views
         {
             InitializeComponent();
             BindingContext = _viewModel = viewModel;
+            Shell.SetBackButtonBehavior(this, new BackButtonBehavior
+            {
+                Command = new Command(async () => await Shell.Current.GoToAsync(".."))
+            });
         }
 
         protected override void OnNavigatedTo(NavigatedToEventArgs args)
