@@ -31,6 +31,11 @@ namespace Teleprompter.Controls
         private DateTime _lastProgressRaiseTime = DateTime.MinValue;
         private const float MinFontSize = 14f;
         private double _effectiveFontSize;
+        private const float DragThreshold = 8f;
+        private bool _touchActive;
+        private bool _dragConfirmed;
+        private double _dragStartY;
+        private double _dragStartOffset;
 
         public static readonly BindableProperty TextProperty =
             BindableProperty.Create(nameof(Text), typeof(string), typeof(ScrollingTextView), string.Empty,
@@ -122,6 +127,8 @@ namespace Teleprompter.Controls
 
         public double Progress { get; private set; }
 
+        public bool IsDragging { get; private set; }
+
         public ScrollingTextView()
         {
             _typeface = CreateTypeface();
@@ -130,7 +137,9 @@ namespace Teleprompter.Controls
             _highlightPaint = new SKPaint { IsAntialias = true };
 
             _canvas = new SKCanvasView();
+            _canvas.EnableTouchEvents = true;
             _canvas.PaintSurface += OnPaintSurface;
+            _canvas.Touch += OnCanvasTouch;
             Content = _canvas;
 
             SizeChanged += OnViewSizeChanged;
@@ -489,6 +498,67 @@ namespace Teleprompter.Controls
             Progress = value;
             _lastProgressRaiseTime = DateTime.UtcNow;
             ProgressChanged?.Invoke(this, value);
+        }
+
+        private void OnCanvasTouch(object? sender, SKTouchEventArgs e)
+        {
+            try
+            {
+                switch (e.ActionType)
+                {
+                    case SKTouchAction.Pressed:
+                        _touchActive = true;
+                        _dragConfirmed = false;
+                        IsDragging = false;
+                        _dragStartY = e.Location.Y;
+                        _dragStartOffset = _scrollOffset;
+                        Pause();
+                        break;
+
+                    case SKTouchAction.Moved:
+                        if (!_touchActive)
+                            break;
+
+                        if (!_dragConfirmed)
+                        {
+                            if (Math.Abs(e.Location.Y - _dragStartY) <= DragThreshold)
+                                break;
+                            _dragConfirmed = true;
+                            IsDragging = true;
+                        }
+
+                        ApplyDragPosition(e.Location.Y);
+                        break;
+
+                    case SKTouchAction.Released:
+                    case SKTouchAction.Cancelled:
+                        if (_touchActive && _dragConfirmed)
+                            ApplyDragPosition(e.Location.Y);
+
+                        _touchActive = false;
+                        _dragConfirmed = false;
+                        IsDragging = false;
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError("Touch handler failed", ex);
+            }
+        }
+
+        private void ApplyDragPosition(double fingerY)
+        {
+            var totalDistance = GetTotalDistance();
+            var raw = _dragStartOffset + (_dragStartY - fingerY);
+            var clamped = Math.Clamp(raw, 0, totalDistance);
+
+            if (clamped < totalDistance)
+                _endReached = false;
+
+            _engine.SeekTo(clamped / Math.Max(1, Speed));
+            UpdatePosition(clamped);
+            ApplyHighlight();
         }
 
         private async void RebuildLayoutAsync()

@@ -223,7 +223,36 @@ TeleprompterApp/
 
 ---
 
-## 9. Open Questions to Decide Later
+## 9. GitHub Commands
+
+**Repo:** https://github.com/Johnlloyd17/Teleprompter
+
+### Push my latest changes (run in project root)
+
+```bash
+git add .
+git commit -m "commit message here"
+git push
+```
+
+### First-time publish (if repo has no remote yet)
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+gh repo create Teleprompter --public --source=. --remote=origin --push
+```
+
+### Clone the repo to a new machine
+
+```bash
+git clone https://github.com/Johnlloyd17/Teleprompter.git
+```
+
+---
+
+## 10. Open Questions to Decide Later
 - Do you want per-script settings, or just one global setting profile for MVP?
 - Which platforms are priority for v1 (Android only first, or all four)?
 - Is recording/camera overlay in scope for MVP or a stretch goal?

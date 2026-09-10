@@ -52,18 +52,27 @@ namespace Teleprompter.Views
 
         private void OnSwipeUp(object? sender, SwipedEventArgs e)
         {
+            if (PlayerView.IsDragging)
+                return;
+
             var secondsPerWord = 60.0 / Math.Max(1, PlayerView.HighlightWpm);
             PlayerView.SmoothSeekBy(secondsPerWord);
         }
 
         private void OnSwipeDown(object? sender, SwipedEventArgs e)
         {
+            if (PlayerView.IsDragging)
+                return;
+
             var secondsPerWord = 60.0 / Math.Max(1, PlayerView.HighlightWpm);
             PlayerView.SmoothSeekBy(-secondsPerWord);
         }
 
         private void OnReadingPanelTapped(object? sender, TappedEventArgs e)
         {
+            if (PlayerView.IsDragging)
+                return;
+
             var position = e.GetPosition(PlayerView);
             if (position is null)
                 return;

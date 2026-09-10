@@ -10,6 +10,7 @@ namespace Teleprompter.Services
         void Pause();
         void Stop();
         void SeekBy(double seconds);
+        void SeekTo(double seconds);
     }
 
     public class ScrollEngine : IScrollEngine
@@ -51,6 +52,17 @@ namespace Teleprompter.Services
             var target = Math.Max(0, ElapsedSeconds + seconds);
             _elapsed = target;
             _stopwatch?.Restart();
+        }
+
+        public void SeekTo(double seconds)
+        {
+            if (_stopwatch is { IsRunning: true })
+            {
+                _elapsed += _stopwatch.Elapsed.TotalSeconds;
+                _stopwatch.Stop();
+            }
+
+            _elapsed = Math.Max(0, seconds);
         }
     }
 }
